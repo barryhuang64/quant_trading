@@ -1,0 +1,9 @@
+# Ignore Python cache files
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.pyc
+[Dd]erive/
+[Bb]uild/
+*.egg-info/
