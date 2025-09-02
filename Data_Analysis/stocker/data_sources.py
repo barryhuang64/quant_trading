@@ -28,6 +28,9 @@ except ImportError:
     TUSHARE_AVAILABLE = False
     print("⚠️ tushare 未安装，将跳过该数据源")
 
+# 导入股票名称管理模块
+from .stock_names import get_stock_name, get_stock_industry
+
 
 class MultiSourceDataFetcher:
     """
@@ -233,10 +236,7 @@ class MultiSourceDataFetcher:
         
         if ticker in a_stock_mapping:
             return a_stock_mapping[ticker]
-            
-        # 尝试一些知名A股代码
-        if ticker in ['MSFT', 'AAPL', 'GOOGL']:  # 这些是美股，用A股替代
-            return '600519'  # 返回贵州茅台作为示例
+
             
         return None
     
@@ -257,6 +257,7 @@ class MultiSourceDataFetcher:
         """
         标准化数据格式，遵循金融数据处理规范
         确保数据格式兼容性，包括正确处理列名映射
+        添加股票名称和行业列
         """
         # 确保有Date列
         if 'Date' not in stock_data.columns and stock_data.index.name == 'Date':
@@ -287,6 +288,19 @@ class MultiSourceDataFetcher:
         # 处理日期格式
         if stock_data['Date'].dtype == 'object':
             stock_data['Date'] = pd.to_datetime(stock_data['Date'])
+        
+        # 添加股票代码列
+        stock_data['Stock_Code'] = ticker
+        
+        # 添加股票名称列（遵循A股股票代码支持规范）
+        stock_name = get_stock_name(ticker)
+        stock_data['Stock_Name'] = stock_name
+        print(f"   📝 股票名称: {ticker} -> {stock_name}")
+        
+        # 添加行业列
+        industry = get_stock_industry(ticker)
+        stock_data['Industry'] = industry
+        print(f"   🏢 所属行业: {industry}")
         
         # 添加调整后的价格列（遵循金融数据处理规范）
         stock_data["Adj. Close"] = stock_data["Close"]  # 假设Close已经是调整后价格
