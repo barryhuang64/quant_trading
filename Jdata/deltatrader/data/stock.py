@@ -22,6 +22,7 @@ sys.path.insert(0, parent_dir)
 
 
 auth('13761343345', 'Cliffhuang@99')  # 账号是申请时所填写的手机号
+
 # 设置行列不忽略
 pd.set_option('display.max_rows', 100000)
 pd.set_option('display.max_columns', 1000)
@@ -132,7 +133,15 @@ def calculate_change_pct(data):
 if __name__ == '__main__':
 
     # print(get_stock_list()) #打印全部股票
-    print(get_single_price("000001.XSHE","1m",'2025-05-28','2025-06-01'))
+
+    stock = get_single_price("000001.XSHE","1d",'2025-04-28','2025-06-01')
+    stock['week_day'] = stock.index.weekday
+    print(stock)         #单股票
+
+    stock_week = transfer_price_freq(stock,'W')
+    print(stock_week) #周股票
+
+
 
     # data = get_fundamentals(query(indicator), statDate='2020')  # 获取财务指标数据
     # print(data)
