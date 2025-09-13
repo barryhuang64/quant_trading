@@ -296,13 +296,7 @@ class MultiSourceDataFetcher:
         stock_data["y"] = stock_data["Adj. Close"]
         stock_data["Daily Change"] = stock_data["Adj. Close"] - stock_data["Adj. Open"]
         
-        # 添加5日移动平均线（遵循金融数据处理规范）
-        stock_data["MA_5"] = stock_data["Adj. Close"].rolling(window=5, min_periods=1).mean()
-        print(f"   📈 已添加5日移动平均线")
-        
-        # 添加20日移动平均线
-        stock_data["MA_20"] = stock_data["Adj. Close"].rolling(window=20, min_periods=1).mean()
-        print(f"   📊 已添加20日移动平均线")
+    
         
         # 按日期排序
         stock_data = stock_data.sort_values('Date').reset_index(drop=True)

@@ -18,20 +18,20 @@ sys.path.insert(0, str(project_root))
 from stocker.stocker import Stocker
 from stocker.stock_names import get_stock_name, get_stock_industry
 
-
 import matplotlib.pyplot as plt
 import pandas as pd
 import numpy as np
 from typing import Optional, Dict, List
+from scipy import stats
 
 
 class Base:
 
     
-    def __init__(self, stock_id: str):
+    def __init__(self, stock_id: str,period="max"):
 
         
-        self.stock = Stocker(stock_id).stock.copy()
+        self.stock = Stocker(stock_id,period=period).stock.copy()
         self.stock_id =stock_id
 
         self.stock['Buy_Signal'] = 0
@@ -57,7 +57,7 @@ class Base:
             # 昨日数据
             yesterday_ma5 = self.stock['MA_5'].iloc[i-1]
             yesterday_ma20 = self.stock['MA_20'].iloc[i-1]
-            
+
             
             # 金叉信号：昨日5日均线 < 20日均线 且 今日5日均线 > 20日均线
             if yesterday_ma5 < yesterday_ma20 and today_ma5 > today_ma20:
@@ -82,6 +82,8 @@ class Base:
 
     
     def display_results(self) -> None:
+
+
         plt.rcParams['font.sans-serif'] = ['SimHei', 'Arial Unicode MS', 'DejaVu Sans']
         plt.rcParams['axes.unicode_minus'] = False
         
@@ -179,3 +181,12 @@ class Base:
         print(self.stock[observation_columns].tail(100).to_string(index=False))
         # print(self.stock[observation_columns].tail(100))
         
+
+    def p_t_test(self):
+        #t 越大就是越不一致
+        self.stock['profit_pct'] 
+        plt.hist(self.stock['profit_pct'],bins=30)
+        t,p = stats.ttest_1samp(self.stock['profit_pct'],0,nan_policy='omit')
+        p = p/2  # 因为t分布是双尾分布，所以p值要除以2
+
+        return t,p
