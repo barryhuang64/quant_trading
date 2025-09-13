@@ -4,5 +4,18 @@
 			"path": "."
 		}
 	],
-	"settings": {}
+	"settings": {
+		"files.exclude": {
+			".idea/": true,
+			".gitignore": true,
+			"**/__pycache__": true,
+			"**/*.pyc": true,
+			"**/.pytest_cache": true,
+			"**/.DS_Store": true,
+			"**/Thumbs.db": true,
+			".vscode/": true,
+			"*.code-workspace": true
+		},
+		"explorer.excludeGitIgnore": false
+	}
 }
