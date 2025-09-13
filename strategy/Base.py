@@ -33,17 +33,22 @@ class Base:
         
         self.stock = Stocker(stock_id).stock.copy()
         self.stock_id =stock_id
+
+        self.stock['Buy_Signal'] = 0
+        self.stock['profit_pct'] = 0
+        self.stock['cum_profit'] = 0
        
     
     def strategy(self) -> pd.DataFrame:
-        """
-        执行交易策略
+        # 添加5日移动平均线（遵循金融数据处理规范）
+        self.stock["MA_5"] = self.stock["Adj. Close"].rolling(window=5, min_periods=1).mean()
+        print(f"   📈 已添加5日移动平均线")
         
-        Returns:
-            pd.DataFrame: 包含交易信号的股票数据
-        """
-        self.stock['Buy_Signal'] = 0
-
+        # 添加20日移动平均线
+        self.stock["MA_20"] = self.stock["Adj. Close"].rolling(window=20, min_periods=1).mean()
+        print(f"   📊 已添加20日移动平均线")
+        
+        
         for i in range(1, len(self.stock)):
             # 今日数据
             today_ma5 = self.stock['MA_5'].iloc[i]
@@ -52,6 +57,7 @@ class Base:
             # 昨日数据
             yesterday_ma5 = self.stock['MA_5'].iloc[i-1]
             yesterday_ma20 = self.stock['MA_20'].iloc[i-1]
+            
             
             # 金叉信号：昨日5日均线 < 20日均线 且 今日5日均线 > 20日均线
             if yesterday_ma5 < yesterday_ma20 and today_ma5 > today_ma20:
@@ -70,8 +76,8 @@ class Base:
             # 计算收益相关指标
             self.stock['profit_pct'] = self.stock['Adj. Close'].pct_change()
             self.stock['cum_profit'] = (1 + self.stock['profit_pct']).cumprod() - 1
-        
-        return self.stock  # 返回DataFrame
+
+        return self.stock['cum_profit'].iloc[-1]
 
 
     
