@@ -92,10 +92,7 @@ class MultiSourceDataFetcher:
                         print(f"   ⏳ 等待 {delay} 秒后重试...")
                         time.sleep(delay)
         
-        # 所有数据源都失败，生成模拟数据
-        print(f"⚠️ 所有数据源都失败，生成 {ticker} 的模拟数据...")
-        return self._generate_mock_data(ticker), "mock_data"
-    
+
 
     def _fetch_akshare_data(self, ticker: str, period: str) -> Optional[pd.DataFrame]:
         """使用 akshare 获取数据"""
@@ -122,6 +119,10 @@ class MultiSourceDataFetcher:
                     start_date = end_date - timedelta(days=730)
                 elif period == "5y":
                     start_date = end_date - timedelta(days=1825)
+                elif period.endswith('d') and len(period) > 1:
+                    # 支持按天数指定周期，如 "30d", "90d", "180d" 等
+                    days = int(period[:-1])  # 提取数字部分
+                    start_date = end_date - timedelta(days=days)    
                 else:
                     start_date = end_date - timedelta(days=365)  # 默认1年
                 
@@ -303,36 +304,6 @@ class MultiSourceDataFetcher:
         
         return stock_data
     
-    def _generate_mock_data(self, ticker: str) -> pd.DataFrame:
-        """
-        生成模拟数据作为最后的降级策略
-        """
-        # 生成一年的模拟数据
-        dates = pd.date_range(start='2024-01-01', end='2024-12-31', freq='D')
-        
-        # 使用随机游走生成价格数据
-        np.random.seed(hash(ticker) % 2**32)  # 基于ticker生成固定的随机种子
-        
-        base_price = 100.0
-        prices = [base_price]
-        
-        for i in range(1, len(dates)):
-            # 随机游走模型
-            change = np.random.normal(0, 2)  # 均值0，标准差2
-            new_price = max(prices[-1] + change, 1.0)  # 确保价格为正
-            prices.append(new_price)
-        
-        # 创建完整的股票数据
-        stock_data = pd.DataFrame({
-            'Date': dates,
-            'Open': [p * (1 + np.random.normal(0, 0.01)) for p in prices],
-            'High': [p * (1 + abs(np.random.normal(0, 0.02))) for p in prices],
-            'Low': [p * (1 - abs(np.random.normal(0, 0.02))) for p in prices],
-            'Close': prices,
-            'Volume': [np.random.randint(100000, 10000000) for _ in prices]
-        })
-        
-        return self._standardize_data(stock_data, ticker)
 
 
 # 工厂函数，提供简单的接口

@@ -8,7 +8,7 @@ import pandas as pd
 from typing import Optional, Dict
 
 # 导入完整的股票名称管理器
-from .all_stock_names import (
+from .CompleteStockNameManager import (
     complete_stock_manager,
     get_complete_stock_name,
     get_complete_stock_industry,

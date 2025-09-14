@@ -28,16 +28,18 @@ from scipy import stats
 class Base:
 
     
-    def __init__(self, stock_id: str,period="max"):
+    def __init__(self, stock_id: str,period="max",col = None):
 
         
-        self.stock = Stocker(stock_id,period=period).stock.copy()
+        self.stock = Stocker(stock_id,period).stock.copy()
         self.stock_id =stock_id
 
         self.stock['Buy_Signal'] = 0
         self.stock['profit_pct'] = 0
         self.stock['cum_profit'] = 0
-       
+
+        if col is not None:
+            self.stock = self.stock[col]
     
     def strategy(self) -> pd.DataFrame:
         # 添加5日移动平均线（遵循金融数据处理规范）
