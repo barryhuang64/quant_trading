@@ -28,7 +28,7 @@ from scipy import stats
 class Base:
 
     
-    def __init__(self, stock_id: str,period="max",col = None):
+    def __init__(self, stock_id: str,period="max", col = None):
 
         
         self.stock = Stocker(stock_id,period).stock.copy()
